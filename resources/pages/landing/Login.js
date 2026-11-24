@@ -9,10 +9,14 @@ export default function LoginScreen({ navigation }) {
 
       <Button
         title="Login"
-        onPress={() => navigation.reset({
+        onPress={() => navigation.getParent()?.reset({
           index: 0,
           routes: [{ name: 'MainApp' }],
         })}
+      />
+      <Button
+        title="Register"
+        onPress={() => navigation.navigate('Registration')}
       />
     </View>
   );

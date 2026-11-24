@@ -5,7 +5,7 @@ export default function HomeScreen({ navigation }) {
   const handleLogout = () => {
     navigation.getParent()?.reset({
       index: 0,
-      routes: [{ name: 'Login' }],
+      routes: [{ name: 'Landing' }],
     });
   };
 
@@ -17,6 +17,10 @@ export default function HomeScreen({ navigation }) {
       <Button
         title="Logout"
         onPress={handleLogout}
+      />
+      <Button
+        title="View Profile"
+        onPress={() => navigation.navigate('Profile')}
       />
     </View>
   );

@@ -1,14 +1,19 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from './Home';
+import ProfileScreen from './Profile';
 
 const Stack = createStackNavigator();
 
 export default function AppHomeNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator screenOptions={{ headerShown: true }}>
       <Stack.Screen
         name="Dashboard"
         component={HomeScreen}
+      />
+      <Stack.Screen
+        name="Profile"
+        component={ProfileScreen}
       />
     </Stack.Navigator>
   );

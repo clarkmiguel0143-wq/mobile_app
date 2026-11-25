@@ -20,6 +20,7 @@ import Icon from '../../components/Icon';
 import BottomNav, { TabSwipeArea } from '../../components/BottomNav';
 import { colors, gradients } from '../../theme';
 import UserContext from '../../data/UserContext';
+import notifications from '../../data/notifications';
 
 const SAMPLE_POSTS = [
   { initials: 'CM', name: 'CLARK MIGUEL', message: 'Baby miss na kita', likes: 12 },
@@ -196,11 +197,25 @@ export default function HomeScreen({ navigation }) {
               <Text style={styles.greeting}>Good morning</Text>
               <Text style={styles.userName}>{profile.headerName}</Text>
             </View>
-            <Glass radius={14} style={styles.bell}>
-              <View style={styles.bellInner}>
-                <Icon name="bell" size={24} />
-              </View>
-            </Glass>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`Notifications, ${notifications.length}`}
+              onPress={() => navigation.navigate('Notifications')}
+              style={styles.notificationButton}
+            >
+              <Glass radius={14} style={styles.bell}>
+                <View style={styles.bellInner}>
+                  <Icon name="bell" size={24} />
+                </View>
+              </Glass>
+              {notifications.length > 0 ? (
+                <View pointerEvents="none" style={styles.notificationBadge}>
+                  <Text style={styles.notificationBadgeText}>
+                    {notifications.length > 99 ? '99+' : notifications.length}
+                  </Text>
+                </View>
+              ) : null}
+            </Pressable>
           </View>
 
           <Glass radius={18} style={styles.composer}>
@@ -296,6 +311,22 @@ const styles = StyleSheet.create({
   userName: { marginTop: 2, fontSize: 19, fontWeight: '700', color: colors.white },
   bell: { width: 44, height: 44 },
   bellInner: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
+  notificationButton: { width: 44, height: 44 },
+  notificationBadge: {
+    position: 'absolute',
+    top: -4,
+    right: -4,
+    minWidth: 18,
+    height: 18,
+    borderRadius: 9,
+    borderWidth: 1.5,
+    borderColor: colors.white,
+    backgroundColor: '#FF4D67',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4,
+  },
+  notificationBadgeText: { color: colors.white, fontSize: 10, fontWeight: '700' },
   composer: { minHeight: 72, marginTop: 22 },
   composerRow: {
     minHeight: 70,

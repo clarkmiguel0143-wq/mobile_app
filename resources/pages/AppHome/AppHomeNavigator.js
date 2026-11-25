@@ -6,7 +6,7 @@ const Stack = createStackNavigator();
 
 export default function AppHomeNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: true }}>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen
         name="Dashboard"
         component={HomeScreen}

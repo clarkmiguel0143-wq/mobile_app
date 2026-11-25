@@ -1,6 +1,9 @@
+import { useRef } from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { BlurTargetView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import BlurTargetContext from '../../components/BlurTargetContext';
 import Glass from '../../components/Glass';
 import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
@@ -10,47 +13,57 @@ import { user } from '../../data/user';
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const blurTarget = useRef(null);
 
   return (
     <View style={styles.root}>
-      <LinearGradient
-        colors={gradients.screen}
-        locations={gradients.screenStops}
-        start={{ x: 0.1, y: 0 }}
-        end={{ x: 0.9, y: 1 }}
-        style={[styles.header, { paddingTop: insets.top + 20 }]}
-      >
-        <Glow size={480} color="#34F0B4" opacity={0.5} style={styles.glow} />
+      <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
+        <BlurTargetView
+          ref={blurTarget}
+          pointerEvents="none"
+          style={StyleSheet.absoluteFill}
+        >
+          <LinearGradient
+            colors={gradients.screen}
+            locations={gradients.screenStops}
+            start={{ x: 0.1, y: 0 }}
+            end={{ x: 0.9, y: 1 }}
+            style={StyleSheet.absoluteFill}
+          />
+          <Glow size={480} color="#34F0B4" opacity={0.5} style={styles.glow} />
+        </BlurTargetView>
 
-        <View style={styles.topRow}>
-          <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.initials}</Text>
+        <BlurTargetContext.Provider value={blurTarget}>
+          <View style={styles.topRow}>
+            <View style={styles.avatar}>
+              <Text style={styles.avatarText}>{user.initials}</Text>
+            </View>
+            <View style={styles.greetingCol}>
+              <Text style={styles.greeting}>Good morning</Text>
+              <Text style={styles.userName}>{user.headerName}</Text>
+            </View>
+            <Glass radius={14} style={styles.bell}>
+              <View style={styles.bellInner}>
+                <Icon name="bell" size={24} />
+              </View>
+            </Glass>
           </View>
-          <View style={styles.greetingCol}>
-            <Text style={styles.greeting}>Good morning</Text>
-            <Text style={styles.userName}>{user.headerName}</Text>
-          </View>
-          <Glass radius={14} style={styles.bell}>
-            <View style={styles.bellInner}>
-              <Icon name="bell" size={24} />
+
+          <Glass radius={18} style={styles.search}>
+            <View style={styles.searchRow}>
+              <Icon name="search" size={22} />
+              <TextInput
+                accessibilityLabel="Search"
+                style={styles.searchInput}
+                placeholder="Search anything..."
+                placeholderTextColor="rgba(255,255,255,0.85)"
+                selectionColor={colors.mint}
+                returnKeyType="search"
+              />
             </View>
           </Glass>
-        </View>
-
-        <Glass radius={18} style={styles.search}>
-          <View style={styles.searchRow}>
-            <Icon name="search" size={22} />
-            <TextInput
-              accessibilityLabel="Search"
-              style={styles.searchInput}
-              placeholder="Search anything..."
-              placeholderTextColor="rgba(255,255,255,0.85)"
-              selectionColor={colors.mint}
-              returnKeyType="search"
-            />
-          </View>
-        </Glass>
-      </LinearGradient>
+        </BlurTargetContext.Provider>
+      </View>
 
       <View style={styles.body} />
 

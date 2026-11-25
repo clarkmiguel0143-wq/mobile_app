@@ -1,6 +1,8 @@
-import { StyleSheet, View } from 'react-native';
+import { useContext } from 'react';
+import { Platform, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { colors, shadows } from '../theme';
+import BlurTargetContext from './BlurTargetContext';
 
 export default function Glass({
   children,
@@ -9,6 +11,8 @@ export default function Glass({
   style,
   innerStyle,
 }) {
+  const blurTarget = useContext(BlurTargetContext);
+
   return (
     <View
       style={[
@@ -21,7 +25,8 @@ export default function Glass({
         <BlurView
           intensity={intensity}
           tint="light"
-          experimentalBlurMethod="dimezisBlurView"
+          blurTarget={blurTarget}
+          blurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : undefined}
           style={StyleSheet.absoluteFill}
         />
         {children}

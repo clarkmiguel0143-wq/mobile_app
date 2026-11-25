@@ -1,3 +1,4 @@
+import { useContext } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -5,11 +6,16 @@ import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
 import BottomNav, { NAV_HEIGHT } from '../../components/BottomNav';
 import { colors, gradients, shadows } from '../../theme';
-import { user } from '../../data/user';
+import UserContext from '../../data/UserContext';
 
-function MenuRow({ icon, title }) {
+function MenuRow({ icon, title, onPress }) {
   return (
-    <View style={[styles.row, shadows.card]}>
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={title}
+      onPress={onPress}
+      style={({ pressed }) => [styles.row, shadows.card, pressed && styles.rowPressed]}
+    >
       <LinearGradient
         colors={gradients.accent}
         start={{ x: 0, y: 0 }}
@@ -20,13 +26,14 @@ function MenuRow({ icon, title }) {
       </LinearGradient>
       <Text style={styles.rowTitle}>{title}</Text>
       <Icon name="chevron" size={24} color={colors.muted} />
-    </View>
+    </Pressable>
   );
 }
 
 export default function ProfileScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const navBottom = Math.max(insets.bottom, 24);
+  const { profile } = useContext(UserContext);
 
   const logOut = () => navigation.getParent()?.reset({
     index: 0,
@@ -47,16 +54,24 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.screenTitle}>Profile</Text>
         <View style={styles.ring}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.initials}</Text>
+            <Text style={styles.avatarText}>{profile.initials}</Text>
           </View>
         </View>
-        <Text style={styles.name}>{user.displayName}</Text>
-        <Text style={styles.email}>{user.email}</Text>
+        <Text style={styles.name}>{profile.displayName}</Text>
+        <Text style={styles.email}>{profile.email}</Text>
       </LinearGradient>
 
       <View style={styles.menu}>
-        <MenuRow icon="pencil" title="Edit Profile" />
-        <MenuRow icon="shield" title="Privacy & Security" />
+        <MenuRow
+          icon="pencil"
+          title="Edit Profile"
+          onPress={() => navigation.navigate('EditProfile')}
+        />
+        <MenuRow
+          icon="shield"
+          title="Privacy & Security"
+          onPress={() => navigation.navigate('PrivacySecurity')}
+        />
       </View>
 
       <Pressable
@@ -112,6 +127,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     gap: 12,
   },
+  rowPressed: { opacity: 0.8 },
   tile: { width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.ink },
   logout: {

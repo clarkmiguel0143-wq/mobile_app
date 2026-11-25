@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import {
   Alert,
   Pressable,
@@ -17,7 +17,7 @@ import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
 import BottomNav from '../../components/BottomNav';
 import { colors, gradients } from '../../theme';
-import { user } from '../../data/user';
+import UserContext from '../../data/UserContext';
 
 const SAMPLE_POSTS = [
   { initials: 'CM', name: 'CLARK MIGUEL', message: 'Baby miss na kita', likes: 12 },
@@ -91,6 +91,7 @@ function FeedCard({ post }) {
 
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
+  const { profile } = useContext(UserContext);
   const blurTarget = useRef(null);
   const feedRef = useRef(null);
   const nextPostId = useRef(1);
@@ -104,7 +105,7 @@ export default function HomeScreen({ navigation }) {
     const id = `user-post-${nextPostId.current}`;
     nextPostId.current += 1;
     setPosts((current) => [
-      { id, initials: user.initials, name: user.headerName, message, likes: 0 },
+      { id, initials: profile.initials, name: profile.headerName, message, likes: 0 },
       ...current,
     ]);
     setDraft('');
@@ -133,11 +134,11 @@ export default function HomeScreen({ navigation }) {
         <View style={[styles.header, { paddingTop: insets.top + 20 }]}>
           <View style={styles.topRow}>
             <View style={styles.avatar}>
-              <Text style={styles.avatarText}>{user.initials}</Text>
+              <Text style={styles.avatarText}>{profile.initials}</Text>
             </View>
             <View style={styles.greetingCol}>
               <Text style={styles.greeting}>Good morning</Text>
-              <Text style={styles.userName}>{user.headerName}</Text>
+              <Text style={styles.userName}>{profile.headerName}</Text>
             </View>
             <Glass radius={14} style={styles.bell}>
               <View style={styles.bellInner}>

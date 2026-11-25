@@ -48,6 +48,19 @@ const shapes = {
       <Path d="m21 21-4.3-4.3" />
     </>
   ),
+  heart: (
+    <Path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
+  ),
+  comment: (
+    <Path d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z" />
+  ),
+  share: (
+    <>
+      <Path d="M12 16V3" />
+      <Path d="m7 8 5-5 5 5" />
+      <Path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
+    </>
+  ),
   home: (
     <>
       <Path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
@@ -69,13 +82,19 @@ const shapes = {
   ),
 };
 
-export default function Icon({ name, size = 24, color = '#FFFFFF', strokeWidth = 2 }) {
+export default function Icon({
+  name,
+  size = 24,
+  color = '#FFFFFF',
+  fill = 'none',
+  strokeWidth = 2,
+}) {
   return (
     <Svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="none"
+      fill={fill}
       stroke={color}
       strokeWidth={strokeWidth}
       strokeLinecap="round"

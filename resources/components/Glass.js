@@ -26,7 +26,11 @@ export default function Glass({
           intensity={intensity}
           tint="light"
           blurTarget={blurTarget}
-          blurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : undefined}
+          blurMethod={
+            Platform.OS === 'android' && blurTarget
+              ? 'dimezisBlurView'
+              : 'none'
+          }
           style={StyleSheet.absoluteFill}
         />
         {children}

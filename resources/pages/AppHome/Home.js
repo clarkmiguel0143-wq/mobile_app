@@ -29,7 +29,7 @@ const SAMPLE_POSTS = [
   },
 ];
 
-const POSTS = [...SAMPLE_POSTS, ...SAMPLE_POSTS, ...SAMPLE_POSTS].map((post, index) => ({
+const POSTS = SAMPLE_POSTS.map((post, index) => ({
   ...post,
   id: `post-${index + 1}`,
 }));
@@ -56,7 +56,6 @@ function FeedCard({ post }) {
           accessibilityLabel={liked ? 'Unlike post' : 'Like post'}
           accessibilityState={{ selected: liked }}
           onPress={() => setLiked((value) => !value)}
-          hitSlop={8}
           style={styles.postAction}
         >
           <Icon
@@ -73,7 +72,7 @@ function FeedCard({ post }) {
           accessibilityRole="button"
           accessibilityLabel="Comment on post"
           onPress={() => Alert.alert('Comments', 'Comments are coming soon.')}
-          hitSlop={8}
+          style={styles.actionButton}
         >
           <Icon name="comment" size={19} />
         </Pressable>
@@ -81,7 +80,7 @@ function FeedCard({ post }) {
           accessibilityRole="button"
           accessibilityLabel="Share post"
           onPress={() => Alert.alert('Share post', 'Sharing is coming soon.')}
-          hitSlop={8}
+          style={styles.actionButton}
         >
           <Icon name="share" size={19} />
         </Pressable>
@@ -93,6 +92,24 @@ function FeedCard({ post }) {
 export default function HomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const blurTarget = useRef(null);
+  const feedRef = useRef(null);
+  const nextPostId = useRef(1);
+  const [posts, setPosts] = useState(POSTS);
+  const [draft, setDraft] = useState('');
+
+  const publishPost = () => {
+    const message = draft.trim();
+    if (!message) return;
+
+    const id = `user-post-${nextPostId.current}`;
+    nextPostId.current += 1;
+    setPosts((current) => [
+      { id, initials: user.initials, name: user.headerName, message, likes: 0 },
+      ...current,
+    ]);
+    setDraft('');
+    feedRef.current?.scrollTo({ y: 0, animated: true });
+  };
 
   return (
     <View style={styles.root}>
@@ -129,27 +146,40 @@ export default function HomeScreen({ navigation }) {
             </Glass>
           </View>
 
-          <Glass radius={18} style={styles.search}>
-            <View style={styles.searchRow}>
-              <Icon name="search" size={22} />
+          <Glass radius={18} style={styles.composer}>
+            <View style={styles.composerRow}>
               <TextInput
-                accessibilityLabel="Search"
-                style={styles.searchInput}
-                placeholder="Search anything..."
+                accessibilityLabel="Write a post"
+                style={styles.composerInput}
+                placeholder="What's on your mind?"
                 placeholderTextColor="rgba(255,255,255,0.85)"
                 selectionColor={colors.mint}
-                returnKeyType="search"
+                value={draft}
+                onChangeText={setDraft}
+                multiline
+                maxLength={280}
               />
+              <Pressable
+                accessibilityRole="button"
+                accessibilityLabel="Publish post"
+                accessibilityState={{ disabled: !draft.trim() }}
+                disabled={!draft.trim()}
+                onPress={publishPost}
+                style={[styles.postButton, !draft.trim() && styles.postButtonDisabled]}
+              >
+                <Text style={styles.postButtonText}>Post</Text>
+              </Pressable>
             </View>
           </Glass>
         </View>
 
         <ScrollView
+          ref={feedRef}
           style={styles.body}
           contentContainerStyle={[styles.feed, { paddingBottom: insets.bottom + 108 }]}
           showsVerticalScrollIndicator={false}
         >
-          {POSTS.map((post) => <FeedCard key={post.id} post={post} />)}
+          {posts.map((post) => <FeedCard key={post.id} post={post} />)}
         </ScrollView>
 
         <BottomNav active="Dashboard" navigation={navigation} />
@@ -184,16 +214,35 @@ const styles = StyleSheet.create({
   userName: { marginTop: 2, fontSize: 19, fontWeight: '700', color: colors.white },
   bell: { width: 44, height: 44 },
   bellInner: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  search: { height: 54, marginTop: 22 },
-  searchRow: {
-    height: 52,
+  composer: { minHeight: 72, marginTop: 22 },
+  composerRow: {
+    minHeight: 70,
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 17,
-    gap: 12,
+    paddingHorizontal: 12,
+    gap: 10,
   },
-  searchInput: { flex: 1, fontSize: 15, color: colors.white, padding: 0 },
-  body: { flex: 1, marginTop: -12 },
+  composerInput: {
+    flex: 1,
+    minHeight: 42,
+    maxHeight: 54,
+    fontSize: 15,
+    lineHeight: 20,
+    color: colors.white,
+    padding: 0,
+    paddingTop: 8,
+  },
+  postButton: {
+    minWidth: 62,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: colors.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 14,
+  },
+  postButtonDisabled: { opacity: 0.65 },
+  postButtonText: { fontSize: 14, fontWeight: '700', color: colors.blue },
   feed: { paddingHorizontal: 22, paddingTop: 12, gap: 14 },
   post: { padding: 10 },
   postHeader: {
@@ -231,13 +280,26 @@ const styles = StyleSheet.create({
     color: colors.blue,
   },
   postActions: {
-    height: 34,
+    height: 48,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 16,
     paddingHorizontal: 2,
   },
-  postAction: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  postAction: {
+    minWidth: 64,
+    height: 44,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+  },
+  actionButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   actionCount: { color: colors.white, fontSize: 12, fontWeight: '600' },
   likedCount: { color: '#FF6384' },
 });

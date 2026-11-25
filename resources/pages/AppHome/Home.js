@@ -7,7 +7,7 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
+} from 'react-native'; 
 import { BlurTargetView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';

@@ -49,21 +49,21 @@ export default function BottomNav({ active, navigation }) {
   );
 }
 
-export const NAV_HEIGHT = 68;
+export const NAV_HEIGHT = 72;
 
 const styles = StyleSheet.create({
   bar: {
     position: 'absolute',
-    left: 20,
-    right: 20,
+    left: '25%',
+    right: '25%',
     height: NAV_HEIGHT,
-    borderRadius: 34,
+    borderRadius: 36,
     backgroundColor: colors.white,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 14,
+    justifyContent: 'space-around',
+    paddingHorizontal: 4,
   },
-  tab: { width: 60, alignItems: 'center', paddingTop: 5 },
-  pill: { width: 44, height: 32, borderRadius: 16, alignItems: 'center', justifyContent: 'center' },
-  label: { marginTop: 5, fontSize: 11, fontWeight: '600' },
+  tab: { flex: 1, alignItems: 'center', paddingTop: 6 },
+  pill: { width: 48, height: 34, borderRadius: 17, alignItems: 'center', justifyContent: 'center' },
+  label: { marginTop: 2, fontSize: 12, fontWeight: '600' },
 });

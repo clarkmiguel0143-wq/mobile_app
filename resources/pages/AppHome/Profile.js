@@ -9,10 +9,7 @@ import { user } from '../../data/user';
 
 function MenuRow({ icon, title }) {
   return (
-    <Pressable
-      accessibilityRole="button"
-      style={({ pressed }) => [styles.row, shadows.card, pressed && styles.pressed]}
-    >
+    <View style={[styles.row, shadows.card]}>
       <LinearGradient
         colors={gradients.accent}
         start={{ x: 0, y: 0 }}
@@ -23,7 +20,7 @@ function MenuRow({ icon, title }) {
       </LinearGradient>
       <Text style={styles.rowTitle}>{title}</Text>
       <Icon name="chevron" size={24} color={colors.muted} />
-    </Pressable>
+    </View>
   );
 }
 
@@ -115,7 +112,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     gap: 12,
   },
-  pressed: { opacity: 0.9 },
   tile: { width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
   rowTitle: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.ink },
   logout: {

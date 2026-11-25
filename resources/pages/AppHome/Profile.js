@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
-import BottomNav, { NAV_HEIGHT } from '../../components/BottomNav';
+import BottomNav, { NAV_HEIGHT, TabSwipeArea } from '../../components/BottomNav';
 import { colors, gradients, shadows } from '../../theme';
 import UserContext from '../../data/UserContext';
 
@@ -41,7 +41,7 @@ export default function ProfileScreen({ navigation }) {
   });
 
   return (
-    <View style={styles.root}>
+    <TabSwipeArea active="Profile" navigation={navigation} style={styles.root}>
       <LinearGradient
         colors={gradients.screen}
         locations={gradients.screenStops}
@@ -84,7 +84,7 @@ export default function ProfileScreen({ navigation }) {
       </Pressable>
 
       <BottomNav active="Profile" navigation={navigation} />
-    </View>
+    </TabSwipeArea>
   );
 }
 

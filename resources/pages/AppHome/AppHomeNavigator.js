@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { BottomNavProvider } from '../../components/BottomNav';
 import UserContext from '../../data/UserContext';
 import { user as initialUser } from '../../data/user';
 import HomeScreen from './Home';
@@ -14,17 +15,19 @@ export default function AppHomeNavigator() {
 
   return (
     <UserContext.Provider value={{ profile, setProfile }}>
-      <Stack.Navigator
-        screenOptions={{
-          headerShown: false,
-          animation: 'slide_from_right',
-        }}
-      >
-        <Stack.Screen name="Dashboard" component={HomeScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-        <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
-      </Stack.Navigator>
+      <BottomNavProvider>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false,
+            animation: 'slide_from_right',
+          }}
+        >
+          <Stack.Screen name="Dashboard" component={HomeScreen} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+          <Stack.Screen name="PrivacySecurity" component={PrivacySecurityScreen} />
+        </Stack.Navigator>
+      </BottomNavProvider>
     </UserContext.Provider>
   );
 }

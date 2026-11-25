@@ -1,8 +1,109 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import {
+  Animated,
+  Easing,
+  PanResponder,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from './Icon';
 import { colors, gradients, shadows } from '../theme';
+
+function navigateToTab(navigation, name) {
+  const state = navigation.getState();
+  if (state.routes[state.index]?.name === name) return;
+
+  if (state.routes.some((route) => route.name === name)) {
+    navigation.popTo(name);
+  } else {
+    navigation.navigate(name);
+  }
+}
+
+const BottomNavContext = createContext({
+  visible: true,
+  switchTab: (name, navigation) => navigateToTab(navigation, name),
+  completeTabTransition: () => {},
+});
+
+export function BottomNavProvider({ children }) {
+  const [visible, setVisible] = useState(true);
+  const timer = useRef(null);
+  const pendingTransition = useRef(false);
+
+  const completeTabTransition = useCallback(() => {
+    if (!pendingTransition.current) return;
+
+    pendingTransition.current = false;
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      setVisible(false);
+      timer.current = null;
+    }, 1000);
+    setVisible(true);
+  }, []);
+
+  const switchTab = useCallback((name, navigation) => {
+    const state = navigation.getState();
+    if (state.routes[state.index]?.name === name) return;
+
+    pendingTransition.current = true;
+    setVisible(false);
+    if (timer.current) clearTimeout(timer.current);
+    timer.current = setTimeout(completeTabTransition, 500);
+
+    navigateToTab(navigation, name);
+  }, [completeTabTransition]);
+
+  useEffect(() => () => {
+    if (timer.current) clearTimeout(timer.current);
+  }, []);
+
+  return (
+    <BottomNavContext.Provider value={{ visible, switchTab, completeTabTransition }}>
+      {children}
+    </BottomNavContext.Provider>
+  );
+}
+
+export function TabSwipeArea({ active, navigation, children, style }) {
+  const { switchTab, completeTabTransition } = useContext(BottomNavContext);
+  const gestureContext = useRef({ active, navigation, switchTab });
+  gestureContext.current = { active, navigation, switchTab };
+
+  useEffect(
+    () => navigation.addListener('transitionEnd', completeTabTransition),
+    [navigation, completeTabTransition],
+  );
+
+  const panResponder = useRef(PanResponder.create({
+    onMoveShouldSetPanResponder: (_event, gesture) =>
+      Math.abs(gesture.dx) > 18 && Math.abs(gesture.dx) > Math.abs(gesture.dy) * 1.25,
+    onPanResponderRelease: (_event, gesture) => {
+      if (Math.abs(gesture.dx) < 70 || Math.abs(gesture.dx) <= Math.abs(gesture.dy) * 1.25) {
+        return;
+      }
+
+      const { active: currentTab, navigation: currentNavigation, switchTab: changeTab } =
+        gestureContext.current;
+      if (currentTab === 'Dashboard' && gesture.dx < 0) {
+        changeTab('Profile', currentNavigation);
+      } else if (currentTab === 'Profile' && gesture.dx > 0) {
+        changeTab('Dashboard', currentNavigation);
+      }
+    },
+  })).current;
+
+  return (
+    <View style={style} {...panResponder.panHandlers}>
+      {children}
+    </View>
+  );
+}
 
 const TABS = [
   { key: 'Dashboard', label: 'Home', icon: 'home' },
@@ -11,20 +112,50 @@ const TABS = [
 
 export default function BottomNav({ active, navigation }) {
   const insets = useSafeAreaInsets();
+  const { visible, switchTab } = useContext(BottomNavContext);
+  const opacity = useRef(new Animated.Value(visible ? 1 : 0)).current;
+  const translateY = useRef(new Animated.Value(visible ? 0 : 14)).current;
+  const scale = useRef(new Animated.Value(visible ? 1 : 0.94)).current;
 
-  const switchTab = (name) => {
-    const state = navigation.getState();
-    const routeExists = state.routes.some((route) => route.name === name);
+  useEffect(() => {
+    const show = visible;
+    const animation = Animated.parallel([
+      Animated.timing(opacity, {
+        toValue: show ? 1 : 0,
+        duration: show ? 260 : 200,
+        easing: show ? Easing.out(Easing.cubic) : Easing.in(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.timing(translateY, {
+        toValue: show ? 0 : 14,
+        duration: show ? 260 : 200,
+        easing: show ? Easing.out(Easing.cubic) : Easing.in(Easing.quad),
+        useNativeDriver: true,
+      }),
+      Animated.spring(scale, {
+        toValue: show ? 1 : 0.94,
+        friction: 8,
+        tension: 80,
+        useNativeDriver: true,
+      }),
+    ]);
 
-    if (routeExists) {
-      navigation.popTo(name);
-    } else {
-      navigation.navigate(name);
-    }
-  };
+    animation.start();
+    return () => animation.stop();
+  }, [opacity, scale, translateY, visible]);
 
   return (
-    <View style={[styles.bar, shadows.card, { bottom: Math.max(insets.bottom, 24) }]}>
+    <Animated.View
+      accessibilityElementsHidden={!visible}
+      importantForAccessibility={visible ? 'auto' : 'no-hide-descendants'}
+      pointerEvents={visible ? 'auto' : 'none'}
+      style={[
+        styles.bar,
+        shadows.card,
+        { bottom: Math.max(insets.bottom, 24) },
+        { opacity, transform: [{ translateY }, { scale }] },
+      ]}
+    >
       {TABS.map((tab) => {
         const isActive = tab.key === active;
 
@@ -33,7 +164,7 @@ export default function BottomNav({ active, navigation }) {
             key={tab.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
-            onPress={() => !isActive && switchTab(tab.key)}
+            onPress={() => !isActive && switchTab(tab.key, navigation)}
             style={styles.tab}
           >
             {isActive ? (
@@ -56,7 +187,7 @@ export default function BottomNav({ active, navigation }) {
           </Pressable>
         );
       })}
-    </View>
+    </Animated.View>
   );
 }
 

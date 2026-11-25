@@ -1,21 +1,23 @@
 import { useContext, useRef, useState } from 'react';
 import {
   Alert,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
   View,
-} from 'react-native'; 
+} from 'react-native';
 import { BlurTargetView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import BlurTargetContext from '../../components/BlurTargetContext';
 import Glass from '../../components/Glass';
 import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
-import BottomNav from '../../components/BottomNav';
+import BottomNav, { TabSwipeArea } from '../../components/BottomNav';
 import { colors, gradients } from '../../theme';
 import UserContext from '../../data/UserContext';
 
@@ -46,9 +48,26 @@ function FeedCard({ post }) {
         <Text style={styles.postName}>{post.name}</Text>
       </View>
 
-      <View style={styles.postMessageBox}>
-        <Text style={styles.postMessage}>{post.message}</Text>
-      </View>
+      {post.imageUri ? (
+        <Image
+          accessibilityLabel="Photo in post"
+          source={{ uri: post.imageUri }}
+          resizeMode="cover"
+          style={styles.postImage}
+        />
+      ) : null}
+      {post.message ? (
+        <View style={post.imageUri ? styles.postCaption : styles.postMessageBox}>
+          <Text
+            style={[
+              styles.postMessage,
+              post.imageUri ? styles.postCaptionText : styles.textPostMessage,
+            ]}
+          >
+            {post.message}
+          </Text>
+        </View>
+      ) : null}
 
       <View style={styles.postActions}>
         <Pressable
@@ -97,23 +116,60 @@ export default function HomeScreen({ navigation }) {
   const nextPostId = useRef(1);
   const [posts, setPosts] = useState(POSTS);
   const [draft, setDraft] = useState('');
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
+
+  const pickPhoto = async () => {
+    try {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert(
+          'Photo access needed',
+          'Allow access to your photos to attach one to a post.',
+        );
+        return;
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['images'],
+        allowsEditing: true,
+        quality: 0.85,
+      });
+
+      if (!result.canceled && result.assets?.[0]) {
+        setSelectedPhoto(result.assets[0].uri);
+      }
+    } catch (error) {
+      Alert.alert(
+        'Unable to select photo',
+        error instanceof Error ? error.message : 'Please try again.',
+      );
+    }
+  };
 
   const publishPost = () => {
     const message = draft.trim();
-    if (!message) return;
+    if (!message && !selectedPhoto) return;
 
     const id = `user-post-${nextPostId.current}`;
     nextPostId.current += 1;
     setPosts((current) => [
-      { id, initials: profile.initials, name: profile.headerName, message, likes: 0 },
+      {
+        id,
+        initials: profile.initials,
+        name: profile.headerName,
+        message,
+        imageUri: selectedPhoto,
+        likes: 0,
+      },
       ...current,
     ]);
     setDraft('');
+    setSelectedPhoto(null);
     feedRef.current?.scrollTo({ y: 0, animated: true });
   };
 
   return (
-    <View style={styles.root}>
+    <TabSwipeArea active="Dashboard" navigation={navigation} style={styles.root}>
       <BlurTargetView
         ref={blurTarget}
         pointerEvents="none"
@@ -162,15 +218,40 @@ export default function HomeScreen({ navigation }) {
               />
               <Pressable
                 accessibilityRole="button"
+                accessibilityLabel="Add photo"
+                onPress={pickPhoto}
+                style={styles.photoButton}
+              >
+                <Icon name="image" size={21} />
+              </Pressable>
+              <Pressable
+                accessibilityRole="button"
                 accessibilityLabel="Publish post"
-                accessibilityState={{ disabled: !draft.trim() }}
-                disabled={!draft.trim()}
+                accessibilityState={{ disabled: !draft.trim() && !selectedPhoto }}
+                disabled={!draft.trim() && !selectedPhoto}
                 onPress={publishPost}
-                style={[styles.postButton, !draft.trim() && styles.postButtonDisabled]}
+                style={[
+                  styles.postButton,
+                  !draft.trim() && !selectedPhoto && styles.postButtonDisabled,
+                ]}
               >
                 <Text style={styles.postButtonText}>Post</Text>
               </Pressable>
             </View>
+            {selectedPhoto ? (
+              <View style={styles.photoPreviewRow}>
+                <Image source={{ uri: selectedPhoto }} style={styles.photoThumbnail} />
+                <Text style={styles.photoAttachedText}>Photo attached</Text>
+                <Pressable
+                  accessibilityRole="button"
+                  accessibilityLabel="Remove attached photo"
+                  onPress={() => setSelectedPhoto(null)}
+                  style={styles.removePhotoButton}
+                >
+                  <Text style={styles.removePhotoText}>Remove</Text>
+                </Pressable>
+              </View>
+            ) : null}
           </Glass>
         </View>
 
@@ -185,7 +266,7 @@ export default function HomeScreen({ navigation }) {
 
         <BottomNav active="Dashboard" navigation={navigation} />
       </BlurTargetContext.Provider>
-    </View>
+    </TabSwipeArea>
   );
 }
 
@@ -233,6 +314,13 @@ const styles = StyleSheet.create({
     padding: 0,
     paddingTop: 8,
   },
+  photoButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   postButton: {
     minWidth: 62,
     height: 38,
@@ -244,8 +332,20 @@ const styles = StyleSheet.create({
   },
   postButtonDisabled: { opacity: 0.65 },
   postButtonText: { fontSize: 14, fontWeight: '700', color: colors.blue },
+  photoPreviewRow: {
+    minHeight: 58,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginHorizontal: 12,
+    marginBottom: 12,
+  },
+  photoThumbnail: { width: 48, height: 48, borderRadius: 8 },
+  photoAttachedText: { flex: 1, color: colors.white, fontSize: 13 },
+  removePhotoButton: { paddingHorizontal: 8, paddingVertical: 6 },
+  removePhotoText: { color: colors.white, fontSize: 12, fontWeight: '600' },
   feed: { paddingHorizontal: 22, paddingTop: 12, gap: 14 },
-  post: { padding: 10 },
+  post: { padding: 14 },
   postHeader: {
     height: 42,
     flexDirection: 'row',
@@ -263,23 +363,34 @@ const styles = StyleSheet.create({
   },
   postAvatarText: { fontSize: 12, fontWeight: '700', color: colors.blue },
   postName: { fontSize: 14, fontWeight: '700', color: colors.white },
+  postImage: {
+    width: '100%',
+    height: 240,
+    marginTop: 10,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.12)',
+  },
   postMessageBox: {
-    minHeight: 104,
-    marginTop: 5,
+    marginTop: 10,
     borderRadius: 12,
     backgroundColor: colors.white,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     justifyContent: 'center',
-    paddingHorizontal: 18,
-    paddingVertical: 14,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  postCaption: {
+    marginTop: 24,
+    paddingHorizontal: 4,
+    paddingVertical: 4,
   },
   postMessage: {
-    textAlign: 'center',
     fontSize: 15,
-    lineHeight: 20,
-    fontWeight: '700',
+    lineHeight: 21,
     color: colors.blue,
   },
+  textPostMessage: { fontWeight: '600' },
+  postCaptionText: { color: colors.white },
   postActions: {
     height: 48,
     flexDirection: 'row',

@@ -61,6 +61,13 @@ const shapes = {
       <Path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7" />
     </>
   ),
+  image: (
+    <>
+      <Rect x="3" y="3" width="18" height="18" rx="2" />
+      <Circle cx="8.5" cy="8.5" r="1.5" />
+      <Path d="m21 15-5-5L5 21" />
+    </>
+  ),
   home: (
     <>
       <Path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />

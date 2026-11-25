@@ -12,6 +12,17 @@ const TABS = [
 export default function BottomNav({ active, navigation }) {
   const insets = useSafeAreaInsets();
 
+  const switchTab = (name) => {
+    const state = navigation.getState();
+    const routeExists = state.routes.some((route) => route.name === name);
+
+    if (routeExists) {
+      navigation.popTo(name);
+    } else {
+      navigation.navigate(name);
+    }
+  };
+
   return (
     <View style={[styles.bar, shadows.card, { bottom: Math.max(insets.bottom, 24) }]}>
       {TABS.map((tab) => {
@@ -22,7 +33,7 @@ export default function BottomNav({ active, navigation }) {
             key={tab.key}
             accessibilityRole="tab"
             accessibilityState={{ selected: isActive }}
-            onPress={() => !isActive && navigation.navigate(tab.key)}
+            onPress={() => !isActive && switchTab(tab.key)}
             style={styles.tab}
           >
             {isActive ? (

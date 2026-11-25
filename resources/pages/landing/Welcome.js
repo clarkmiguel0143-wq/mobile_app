@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GradientBackground from '../../components/GradientBackground';
@@ -18,7 +18,14 @@ export default function WelcomeScreen({ navigation }) {
             start={{ x: 0.2, y: 0 }}
             end={{ x: 0.8, y: 1 }}
             style={styles.logo}
-          />
+          >
+            <Image
+              source={require('../../../assets/dexapp-logo.png')}
+              style={styles.logoMark}
+              resizeMode="contain"
+              accessibilityLabel={`${APP_NAME} logo`}
+            />
+          </LinearGradient>
           <Text style={styles.appName}>{APP_NAME}</Text>
         </View>
 
@@ -48,7 +55,14 @@ export default function WelcomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   content: { flex: 1, paddingHorizontal: 24 },
   brand: { alignItems: 'center' },
-  logo: { width: 76, height: 76, borderRadius: 24 },
+  logo: {
+    width: 96,
+    height: 96,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logoMark: { width: 154, height: 154 },
   appName: { marginTop: 12, fontSize: 20, fontWeight: '700', color: colors.white },
   copy: { marginTop: 60, paddingHorizontal: 8 },
   headline: {

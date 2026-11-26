@@ -1,11 +1,12 @@
 import { useContext } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
 import { colors, gradients, shadows } from '../../theme';
 import UserContext from '../../data/UserContext';
+import styles from './Profile.styles';
 
 function MenuRow({ icon, title, onPress }) {
   return (
@@ -104,74 +105,3 @@ export default function ProfileScreen({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.page },
-  header: {
-    minHeight: 290,
-    paddingBottom: 18,
-    alignItems: 'center',
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
-    overflow: 'hidden',
-  },
-  glow: { top: -200, right: -230 },
-  backButton: {
-    position: 'absolute',
-    left: 24,
-    width: 44,
-    height: 44,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.35)',
-    backgroundColor: 'rgba(255,255,255,0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  backButtonPressed: { opacity: 0.75 },
-  screenTitle: { fontSize: 18, fontWeight: '700', color: colors.white },
-  ring: {
-    marginTop: 16,
-    padding: 4,
-    borderRadius: 54,
-    backgroundColor: 'rgba(255,255,255,0.6)',
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  avatarText: { fontSize: 34, fontWeight: '700', color: colors.blue },
-  name: { marginTop: 14, fontSize: 22, fontWeight: '700', color: colors.white },
-  email: { marginTop: 3, fontSize: 13, color: colors.textSoft },
-  menu: { paddingHorizontal: 24, marginTop: 23, gap: 13 },
-  row: {
-    height: 64,
-    borderRadius: 20,
-    backgroundColor: colors.white,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 18,
-    gap: 12,
-  },
-  rowPressed: { opacity: 0.8 },
-  tile: { width: 38, height: 38, borderRadius: 14, alignItems: 'center', justifyContent: 'center' },
-  rowTitle: { flex: 1, fontSize: 15, fontWeight: '600', color: colors.ink },
-  logout: {
-    position: 'absolute',
-    left: 24,
-    right: 24,
-    height: 44,
-    borderRadius: 22,
-    borderWidth: 1.5,
-    borderColor: 'rgba(229,72,77,0.35)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-  },
-  logoutText: { fontSize: 15, fontWeight: '600', color: colors.danger },
-});

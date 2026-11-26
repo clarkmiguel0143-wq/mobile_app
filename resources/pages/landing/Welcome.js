@@ -1,10 +1,11 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
+import { Image, Text, View } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import GradientBackground from '../../components/GradientBackground';
 import { PrimaryButton, SecondaryButton } from '../../components/Buttons';
-import { colors, gradients } from '../../theme';
+import { gradients } from '../../theme';
 import { APP_NAME } from '../../data/user';
+import styles from './Welcome.styles';
 
 export default function WelcomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -51,28 +52,3 @@ export default function WelcomeScreen({ navigation }) {
     </GradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  content: { flex: 1, paddingHorizontal: 24 },
-  brand: { alignItems: 'center' },
-  logo: {
-    width: 96,
-    height: 96,
-    borderRadius: 28,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  logoMark: { width: 154, height: 154 },
-  appName: { marginTop: 12, fontSize: 20, fontWeight: '700', color: colors.white },
-  copy: { marginTop: 60, paddingHorizontal: 8 },
-  headline: {
-    fontSize: 34,
-    lineHeight: 40,
-    fontWeight: '700',
-    letterSpacing: -0.34,
-    color: colors.white,
-  },
-  subtitle: { marginTop: 12, fontSize: 15, lineHeight: 22, color: colors.textSoft },
-  actions: { marginTop: 68 },
-  secondaryButton: { marginTop: 12 },
-});

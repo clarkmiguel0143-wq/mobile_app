@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text } from 'react-native';
-import { colors, shadows } from '../theme';
+import { Pressable, Text } from 'react-native';
+import { shadows } from '../theme';
+import styles from './Buttons.styles';
 
 export function PrimaryButton({ title, onPress, style }) {
   return (
@@ -29,24 +30,3 @@ export function SecondaryButton({ title, onPress, style }) {
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  primary: {
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  primaryText: { fontSize: 16, fontWeight: '600', color: colors.link },
-  secondary: {
-    height: 48,
-    borderRadius: 24,
-    borderWidth: 1.5,
-    borderColor: 'rgba(255,255,255,0.75)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryText: { fontSize: 15, fontWeight: '600', color: colors.white },
-  pressed: { opacity: 0.85 },
-});

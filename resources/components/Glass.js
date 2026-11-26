@@ -3,6 +3,7 @@ import { Platform, StyleSheet, View } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { colors, shadows } from '../theme';
 import BlurTargetContext from './BlurTargetContext';
+import styles from './Glass.styles';
 
 export default function Glass({
   children,
@@ -38,11 +39,3 @@ export default function Glass({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  inner: {
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: colors.glassBorder,
-  },
-});

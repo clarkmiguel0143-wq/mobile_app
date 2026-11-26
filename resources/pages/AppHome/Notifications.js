@@ -4,6 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Icon from '../../components/Icon';
 import { colors, gradients } from '../../theme';
 import UserContext from '../../data/UserContext';
+import styles from './Notifications.styles';
 
 function getActivityStyle(activity) {
   if (activity.includes('liked')) {
@@ -133,104 +134,3 @@ export default function NotificationsScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, backgroundColor: colors.page },
-  content: { flex: 1, paddingHorizontal: 20, paddingTop: 22, paddingBottom: 12 },
-  titleRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  title: { color: colors.white, fontSize: 24, fontWeight: '700', letterSpacing: -0.3 },
-  subtitle: { marginTop: 4, color: colors.textSoft, fontSize: 13 },
-  countBadge: {
-    minWidth: 34,
-    height: 34,
-    borderRadius: 17,
-    backgroundColor: 'rgba(255,255,255,0.18)',
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 8,
-  },
-  countText: { color: colors.white, fontSize: 14, fontWeight: '700' },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    color: colors.textSoft,
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-  },
-  markAllPressed: { opacity: 0.7 },
-  markAllText: { color: colors.mint, fontSize: 12, fontWeight: '700' },
-  list: { paddingBottom: 8, gap: 10 },
-  card: {
-    minHeight: 76,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
-    backgroundColor: 'rgba(255,255,255,0.12)',
-  },
-  unreadCard: {
-    borderColor: 'rgba(255,255,255,0.42)',
-    backgroundColor: 'rgba(255,255,255,0.18)',
-  },
-  cardPressed: { opacity: 0.8 },
-  avatar: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  avatarText: { color: colors.white, fontSize: 13, fontWeight: '700' },
-  activityBadge: {
-    position: 'absolute',
-    right: -3,
-    bottom: -3,
-    width: 22,
-    height: 22,
-    borderRadius: 11,
-    borderWidth: 2,
-    borderColor: '#1565D8',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  message: {
-    color: colors.white,
-    fontSize: 14,
-    lineHeight: 20,
-  },
-  notificationCopy: { flex: 1 },
-  tapHint: { marginTop: 5, color: colors.textSoft, fontSize: 11 },
-  unreadDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: colors.mint,
-    marginHorizontal: 8,
-  },
-  userName: { fontWeight: '700' },
-  emptyState: { alignItems: 'center', paddingHorizontal: 16, paddingTop: 40 },
-  emptyIcon: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTitle: { marginTop: 14, color: colors.white, fontSize: 16, fontWeight: '700' },
-  emptyMessage: { marginTop: 5, color: colors.textSoft, fontSize: 13, textAlign: 'center' },
-});

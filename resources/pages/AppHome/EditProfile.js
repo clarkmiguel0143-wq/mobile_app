@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -16,7 +15,7 @@ import GlassInput from '../../components/GlassInput';
 import GradientBackground from '../../components/GradientBackground';
 import Icon from '../../components/Icon';
 import UserContext from '../../data/UserContext';
-import { colors } from '../../theme';
+import styles from './EditProfile.styles';
 
 export default function EditProfileScreen({ navigation }) {
   const insets = useSafeAreaInsets();
@@ -117,21 +116,3 @@ export default function EditProfileScreen({ navigation }) {
     </GradientBackground>
   );
 }
-
-const styles = StyleSheet.create({
-  flex: { flex: 1 },
-  content: { flexGrow: 1, paddingHorizontal: 24 },
-  back: { width: 44, height: 44 },
-  backInner: { width: 42, height: 42, alignItems: 'center', justifyContent: 'center' },
-  title: {
-    marginTop: 22,
-    fontSize: 32,
-    fontWeight: '700',
-    letterSpacing: -0.32,
-    color: colors.white,
-  },
-  subtitle: { marginTop: 7, fontSize: 15, color: colors.textSoft },
-  nameInput: { marginTop: 36 },
-  field: { marginTop: 18 },
-  saveButton: { marginTop: 32 },
-});

@@ -4,7 +4,8 @@ import { BlurTargetView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
 import Glow from './Glow';
 import BlurTargetContext from './BlurTargetContext';
-import { colors, gradients } from '../theme';
+import { gradients } from '../theme';
+import styles from './GradientBackground.styles';
 
 export default function GradientBackground({ children }) {
   const blurTarget = useRef(null);
@@ -24,15 +25,11 @@ export default function GradientBackground({ children }) {
             end={{ x: 0.9, y: 1 }}
             style={StyleSheet.absoluteFill}
           />
-          <Glow size={480} color="#34F0B4" opacity={0.55} style={{ top: -190, right: -230 }} />
-          <Glow size={520} color="#78B4FF" opacity={0.55} style={{ bottom: -226, left: -240 }} />
+          <Glow size={480} color="#34F0B4" opacity={0.55} style={styles.topGlow} />
+          <Glow size={520} color="#78B4FF" opacity={0.55} style={styles.bottomGlow} />
         </BlurTargetView>
         {children}
       </View>
     </BlurTargetContext.Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  root: { flex: 1, overflow: 'hidden', backgroundColor: colors.blue },
-});

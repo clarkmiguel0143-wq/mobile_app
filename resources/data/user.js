@@ -6,3 +6,8 @@ export const user = {
   initials: 'CM',
   email: 'clark.miguel@gmail.com',
 };
+
+export const privacySettings = {
+  showEmailOnProfile: true,
+  allowCommentsOnMyPosts: true,
+};

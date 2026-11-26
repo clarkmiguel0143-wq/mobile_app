@@ -4,7 +4,6 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Glow from '../../components/Glow';
 import Icon from '../../components/Icon';
-import BottomNav, { NAV_HEIGHT, TabSwipeArea } from '../../components/BottomNav';
 import { colors, gradients, shadows } from '../../theme';
 import UserContext from '../../data/UserContext';
 
@@ -30,10 +29,12 @@ function MenuRow({ icon, title, onPress }) {
   );
 }
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfileScreen({ navigation, route }) {
   const insets = useSafeAreaInsets();
   const navBottom = Math.max(insets.bottom, 24);
-  const { profile } = useContext(UserContext);
+  const { profile, privacySettings } = useContext(UserContext);
+  const viewedProfile = route.params?.profileUser ?? profile;
+  const isOwnProfile = !route.params?.profileUser;
 
   const logOut = () => navigation.getParent()?.reset({
     index: 0,
@@ -41,7 +42,7 @@ export default function ProfileScreen({ navigation }) {
   });
 
   return (
-    <TabSwipeArea active="Profile" navigation={navigation} style={styles.root}>
+    <View style={styles.root}>
       <LinearGradient
         colors={gradients.screen}
         locations={gradients.screenStops}
@@ -51,40 +52,56 @@ export default function ProfileScreen({ navigation }) {
       >
         <Glow size={480} color="#34F0B4" opacity={0.5} style={styles.glow} />
 
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel="Back to Home"
+          onPress={() => navigation.navigate('Dashboard')}
+          style={({ pressed }) => [
+            styles.backButton,
+            { top: insets.top + 10 },
+            pressed && styles.backButtonPressed,
+          ]}
+        >
+          <Icon name="back" size={23} />
+        </Pressable>
         <Text style={styles.screenTitle}>Profile</Text>
         <View style={styles.ring}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{profile.initials}</Text>
+            <Text style={styles.avatarText}>{viewedProfile.initials}</Text>
           </View>
         </View>
-        <Text style={styles.name}>{profile.displayName}</Text>
-        <Text style={styles.email}>{profile.email}</Text>
+        <Text style={styles.name}>{viewedProfile.displayName}</Text>
+        {isOwnProfile && privacySettings.showEmailOnProfile ? (
+          <Text style={styles.email}>{profile.email}</Text>
+        ) : null}
       </LinearGradient>
 
-      <View style={styles.menu}>
-        <MenuRow
-          icon="pencil"
-          title="Edit Profile"
-          onPress={() => navigation.navigate('EditProfile')}
-        />
-        <MenuRow
-          icon="shield"
-          title="Privacy & Security"
-          onPress={() => navigation.navigate('PrivacySecurity')}
-        />
-      </View>
+      {isOwnProfile ? (
+        <>
+          <View style={styles.menu}>
+            <MenuRow
+              icon="pencil"
+              title="Edit Profile"
+              onPress={() => navigation.navigate('EditProfile')}
+            />
+            <MenuRow
+              icon="shield"
+              title="Privacy & Security"
+              onPress={() => navigation.navigate('PrivacySecurity')}
+            />
+          </View>
 
-      <Pressable
-        accessibilityRole="button"
-        onPress={logOut}
-        style={[styles.logout, { bottom: navBottom + NAV_HEIGHT + 20 }]}
-      >
-        <Icon name="logout" size={24} color={colors.danger} />
-        <Text style={styles.logoutText}>Log out</Text>
-      </Pressable>
-
-      <BottomNav active="Profile" navigation={navigation} />
-    </TabSwipeArea>
+          <Pressable
+            accessibilityRole="button"
+            onPress={logOut}
+            style={[styles.logout, { bottom: navBottom + 20 }]}
+          >
+            <Icon name="logout" size={24} color={colors.danger} />
+            <Text style={styles.logoutText}>Log out</Text>
+          </Pressable>
+        </>
+      ) : null}
+    </View>
   );
 }
 
@@ -99,6 +116,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   glow: { top: -200, right: -230 },
+  backButton: {
+    position: 'absolute',
+    left: 24,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.35)',
+    backgroundColor: 'rgba(255,255,255,0.16)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backButtonPressed: { opacity: 0.75 },
   screenTitle: { fontSize: 18, fontWeight: '700', color: colors.white },
   ring: {
     marginTop: 16,

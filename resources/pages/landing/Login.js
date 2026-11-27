@@ -15,6 +15,8 @@ import GlassInput from '../../components/GlassInput';
 import Icon from '../../components/Icon';
 import { PrimaryButton } from '../../components/Buttons';
 import styles from './Login.styles';
+import { useMutation } from '@tanstack/react-query';
+import { loginAPI } from '../../api/login_logout/login';
 
 function SocialButton({ label, letter }) {
   return (
@@ -36,10 +38,31 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const signIn = () => navigation.getParent()?.reset({
-    index: 0,
-    routes: [{ name: 'MainApp' }],
+  const { mutate: loginFunction } = useMutation({
+      mutationFn: (data) => loginAPI(data),
+      onSuccess: (response) => {
+        console.log('Login successful:', response);
+        // navigation.getParent()?.reset({
+        //   index: 0,
+        //   routes: [{ name: 'MainApp' }],
+        // });
+      },
+      onError: (e) => {
+        alert(e.response?.data?.message || 'An error occurred');
+      },
   });
+
+  const handleLogin = async () => {
+    if(!email || !password){
+      Alert.alert('Missing details', 'Please fill in all fields');
+      return;
+    }
+
+    await loginFunction({ 
+      email, 
+      password
+    });
+  }
 
   return (
     <GradientBackground>
@@ -97,7 +120,7 @@ export default function LoginScreen({ navigation }) {
             <Text style={styles.forgotText}>Forgot password?</Text>
           </Pressable>
 
-          <PrimaryButton title="Sign In" onPress={signIn} style={styles.signIn} />
+          <PrimaryButton title="Sign In" onPress={() => handleLogin()} style={styles.signIn} />
 
           <View style={styles.dividerRow}>
             <View style={styles.line} />

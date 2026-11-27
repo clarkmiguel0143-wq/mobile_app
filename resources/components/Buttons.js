@@ -2,15 +2,17 @@ import { Pressable, Text } from 'react-native';
 import { shadows } from '../theme';
 import styles from './Buttons.styles';
 
-export function PrimaryButton({ title, onPress, style }) {
+export function PrimaryButton({ title, onPress, style, disabled = false }) {
   return (
     <Pressable
       accessibilityRole="button"
       onPress={onPress}
+      disabled={disabled}
       style={({ pressed }) => [
         styles.primary,
         shadows.button,
         pressed && styles.pressed,
+        disabled && styles.disabled,
         style,
       ]}
     >

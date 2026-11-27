@@ -10,6 +10,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   primaryText: { fontSize: 16, fontWeight: '600', color: colors.link },
+  disabled: { opacity: 0.6 },
   secondary: {
     height: 48,
     borderRadius: 24,
